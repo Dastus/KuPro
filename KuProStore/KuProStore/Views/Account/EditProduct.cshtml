@@ -1,0 +1,183 @@
+﻿@model KuProStore.UI.ViewModel.AddProductViewModel
+
+@{
+    Layout = "~/Views/_BasicLayout.cshtml";
+}
+
+<div class="modal fade" id="basic" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Подтверждение удаления</h4>
+            </div>
+            <div class="modal-body">
+                Вы действительно хотите удалить это фото?
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" type="button" class="btn btn-default">Отмена</button>
+                <button id="btnContinueDelete" type="button" class="btn btn-primary">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-3"></div>
+    
+    <div class="col-sm-9">
+
+        <div class="row">
+            @Html.ValidationSummary()
+        </div>
+        <div class="row">
+            @if (TempData["SuccessEdit"] != null)
+            {
+                <div class="col-sm-9">
+                    <div class="alert alert-success alert-dismissable">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <text style="padding-left:10px"><strong>Изменения сохранены!</strong><text>
+                    </div>
+                </div>
+            }
+        </div>
+        @using (Html.BeginForm("EditProduct", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+        <div class="row">
+            <div class="col-sm-3">
+                <strong>*Название товара:</strong>
+                @Html.TextBoxFor(x => Model.Name, new { @class = "form-control", @required = "required" })
+                <br>
+                <strong>*Цена:</strong>
+                @Html.TextBoxFor(x => Model.Price, new { @class = "form-control", @required = "required" })
+                <br>
+                <strong>*Область:</strong>
+                @Html.DropDownListFor(m => m.RegionId, new SelectList(Model.Regions, "ID", "RegionName"), new { @id = "#region", @class = "form-control" })
+                <br>
+                <strong>*Город:</strong>
+                @Html.TextBoxFor(x => Model.TownName, new { @class = "form-control", @required = "required", data_autocomplete_source = Url.Action("AutoCompleteTownSearch", "Home", new { term = Model.TownName, term2 = Model.RegionId }) })
+                <br>
+                <strong>Контактная информация:</strong>
+                @Html.TextAreaFor(x => Model.Contacts, new { @class = "form-control", @rows = 5, @placeholder = "Если оставить пустым, будет использована контактная информация, настроенная в Вашем кабинете" })
+                <br>
+                <strong>Описание:</strong>
+                @Html.TextAreaFor(x => Model.Description, new { @class = "form-control", @rows = 5, @placeholder = "Добавьте здесь описание вашего товара" })
+                <br>
+                @Html.HiddenFor(x => Model.ProductId)
+                <br>
+                <button style="height:50px;width:120px" type="submit" name="Add" class="btn btn-primary"><strong>Сохранить</strong></button>
+            </div>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-5">                
+                @if (Model.Images != null)
+            {
+                for (int j = 0; j < Model.Images.Value.Count; j++)
+                {
+                        <div class="row" style="margin-top:10px">
+                            @if (j == 0)
+                            {
+                                <strong style="font-size:115%">Фото 1 (Заглавное):</strong>
+                            }
+                            else
+                            {
+                                <strong>Фото @(j + 1):</strong>
+                            }
+                            <br>
+                            <br>
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <strong style="margin-left:10px; color:#228B22; font-size:115%">Заменить?</strong>
+                                </div>
+                                <div class="col-xs-4">
+                                    <input type="file" name="images" accept="image/*" />
+                                </div>
+                            </div>
+                            <br>
+                            <img src="@Model.Images.Value[j].ImageUrl" style="padding-left:15%; max-width:300px;max-height:300px">
+                            <br>
+                            <div class="row">
+                                <div class="col-xs-3">
+                                </div>
+                                <div class="col-xs-4">
+                                    <a id="deleteItem" class="btn btn-danger deleteItem" style="margin-top:5px; height:30px;width:120px " data-target="#basic" data-toggle="modal" data-id="@Model.Images.Value[j].ID">Удалить</a>
+                                </div>
+                            </div>
+
+                            <hr />
+                        </div>
+                    }
+                    for (int j = (1 + Model.Images.Value.Count); j < 6; j++)
+                    {
+                        <div class="row" style="margin-top:10px">
+                            <strong>Фото @j:</strong>
+                            <input type="file" name="images" accept="image/*" />
+                        </div>
+                    }
+                }
+                else
+                {
+                    for (int j = 1; j < 6; j++)
+                    {
+                        <div class="row" style="margin-bottom:10px">
+                            <strong>Фото @j:</strong>
+                            <input type="file" name="images" accept="image/*" />
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+        }
+    </div>
+    <div class="col-sm-1"></div>    
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jquery-ui")
+    <script type="text/javascript">
+        $(function () {
+            $("[data-autocomplete-source]").each(function () {
+                var target = $(this);
+                target.autocomplete({ minLength: 3,
+                source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("AutoCompleteTownSearch", "Home")',
+                    dataType: "json",
+                    data: {
+                        town : request.term,
+                        region : document.getElementById('#region').value,
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                   });
+                }
+
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+            var item_to_delete;
+            $(".deleteItem").click(function(e) {
+                item_to_delete = $(this).data('id');
+            });
+            $('#btnContinueDelete').click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("DeleteImage", "Account")',
+                    dataType: "json",
+                    data: {
+                        imageId : item_to_delete,
+                    },
+                    success: function()
+                    {
+                        location.reload();
+                    }
+                   });
+            });
+    </script>   
+}
+
+

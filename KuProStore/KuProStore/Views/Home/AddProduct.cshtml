@@ -1,0 +1,94 @@
+﻿@model KuProStore.UI.ViewModel.AddProductViewModel
+
+@{
+    Layout = "~/Views/_BasicLayout.cshtml";
+}
+
+
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-9">
+    @if (ViewBag.FirstAttempt == null && !ViewData.ModelState.IsValid )
+    { 
+        <div class="row" style="padding-left:1%">
+            <div class="col-sm-7">   
+                <div class="alert alert-danger">
+                    <strong>@Html.ValidationSummary()</strong>
+                </div>
+            </div>
+        </div>    
+    }
+    @using (Html.BeginForm("AddProduct", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="col-sm-3">
+            <strong>*Название товара:</strong>
+            @Html.TextBoxFor(x => Model.Name, new { @class = "form-control",  @required = "required" })
+            <br>
+            <strong>*Цена:</strong>
+            @Html.TextBoxFor(x => Model.Price, new { @class = "form-control",  @required = "required" })
+            <br>
+            <strong>*Область:</strong>
+            @Html.DropDownListFor(m => m.RegionId, new SelectList(Model.Regions, "ID", "RegionName"), new { @id = "#region", @class = "form-control" })
+            <br>
+            <strong>*Город:</strong>
+            @Html.TextBoxFor(x => Model.TownName, new { @class = "form-control", @required = "required", data_autocomplete_source = Url.Action("AutoCompleteTownSearch", "Home", new { term = Model.TownName, term2 = Model.RegionId }) })
+            <br>
+            <strong>Контактная информация:</strong>
+            @Html.TextAreaFor(x => Model.Contacts, new { @class = "form-control", @rows = 5, @placeholder = "Если оставить пустым, будет использована контактная информация, настроенная в Вашем кабинете" })
+            <br>
+            <button style="height:50px;width:120px" type="submit" name="Add" class="btn btn-primary"><strong>Сохранить</strong></button>
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
+            <strong>Описание:</strong>
+            @Html.TextAreaFor(x => Model.Description, new { @class = "form-control", @rows = 6, @placeholder = "Добавьте сюда описание вашего товара" })
+            <br>
+            <div style="text-align:center">            
+                <strong>Фото:</strong>
+                <input type="file" name="images" style="margin:auto" accept="image/*" />
+                <br />
+                <input type="file" name="images" style="margin:auto" accept="image/*" />
+                <br />
+                <input type="file" name="images" style="margin:auto" accept="image/*" />
+                <br />
+                <input type="file" name="images" style="margin:auto" accept="image/*" />
+                <br />
+                <input type="file" name="images" style="margin:auto" accept="image/*" />
+                <br />            
+            </div>
+        </div>
+    }
+    </div>
+    <div class="col-sm-3"></div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jquery-ui")
+    <script type="text/javascript">
+        $(function () {
+            $("[data-autocomplete-source]").each(function () {
+                var target = $(this);
+                target.autocomplete({ minLength: 3,
+                source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("AutoCompleteTownSearch", "Home")',
+                    dataType: "json",
+                    data: {
+                        town : request.term,
+                        region : document.getElementById('#region').value,
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                   });
+                }
+
+                });
+            });
+        });
+    </script>
+}
+
+

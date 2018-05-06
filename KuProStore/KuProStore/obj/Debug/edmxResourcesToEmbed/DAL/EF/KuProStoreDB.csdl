@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="KuProEFModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="ImageEntity">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ImageUrl" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ProductId" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Product" Relationship="Self.FK_Image_Product" FromRole="Images" ToRole="Products" />
+  </EntityType>
+  <EntityType Name="ProductEntity">
+    <Key>
+      <PropertyRef Name="ProductId" />
+    </Key>
+    <Property Name="ProductId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
+    <Property Name="Contacts" Type="String" MaxLength="512" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="UserId" Type="Int32" Nullable="false" />
+    <Property Name="TownId" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Images" Relationship="Self.FK_Image_Product" FromRole="Products" ToRole="Images" />
+    <NavigationProperty Name="Town" Relationship="Self.FK_Product_Town" FromRole="Products" ToRole="Towns" />
+    <NavigationProperty Name="User" Relationship="Self.FK_Product_User" FromRole="Products" ToRole="Users" />
+    <Property Name="AddingTime" Type="DateTime" Nullable="false" Precision="7" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <Property Name="UpdateTime" Type="DateTime" Nullable="false" Precision="7" />
+  </EntityType>
+  <EntityType Name="RegionEntity">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="RegionName" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="Towns" Relationship="Self.FK_Town_Region" FromRole="Regions" ToRole="Towns" />
+  </EntityType>
+  <EntityType Name="TownEntity">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="RegionId" Type="Int32" Nullable="false" />
+    <Property Name="TownName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="Products" Relationship="Self.FK_Product_Town" FromRole="Towns" ToRole="Products" />
+    <NavigationProperty Name="Region" Relationship="Self.FK_Town_Region" FromRole="Towns" ToRole="Regions" />
+  </EntityType>
+  <EntityType Name="UserEntity">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="RegDate" Type="DateTime" Nullable="false" Precision="7" />
+    <Property Name="FirstName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="LastName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="Password" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+    <Property Name="Cookie" Type="String" MaxLength="80" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ContactPhone" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <Property Name="Balance" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <NavigationProperty Name="Products" Relationship="Self.FK_Product_User" FromRole="Users" ToRole="Products" />
+    <Property Name="ContactInfo" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <Association Name="FK_Image_Product">
+    <End Role="Products" Type="KuProEFModel.ProductEntity" Multiplicity="1" />
+    <End Role="Images" Type="KuProEFModel.ImageEntity" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Products">
+        <PropertyRef Name="ProductId" />
+      </Principal>
+      <Dependent Role="Images">
+        <PropertyRef Name="ProductId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Product_Town">
+    <End Role="Towns" Type="KuProEFModel.TownEntity" Multiplicity="1" />
+    <End Role="Products" Type="KuProEFModel.ProductEntity" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Towns">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Products">
+        <PropertyRef Name="TownId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Product_User">
+    <End Role="Users" Type="KuProEFModel.UserEntity" Multiplicity="1" />
+    <End Role="Products" Type="KuProEFModel.ProductEntity" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Products">
+        <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Town_Region">
+    <End Role="Regions" Type="KuProEFModel.RegionEntity" Multiplicity="1" />
+    <End Role="Towns" Type="KuProEFModel.TownEntity" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Regions">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Towns">
+        <PropertyRef Name="RegionId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="StoreDBcontext" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Images" EntityType="KuProEFModel.ImageEntity" />
+    <EntitySet Name="Products" EntityType="KuProEFModel.ProductEntity" />
+    <EntitySet Name="Regions" EntityType="KuProEFModel.RegionEntity" />
+    <EntitySet Name="Towns" EntityType="KuProEFModel.TownEntity" />
+    <EntitySet Name="UserEntities" EntityType="KuProEFModel.UserEntity" />
+    <AssociationSet Name="FK_Image_Product" Association="Self.FK_Image_Product">
+      <End Role="Products" EntitySet="Products" />
+      <End Role="Images" EntitySet="Images" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Product_Town" Association="Self.FK_Product_Town">
+      <End Role="Towns" EntitySet="Towns" />
+      <End Role="Products" EntitySet="Products" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Product_User" Association="Self.FK_Product_User">
+      <End Role="Users" EntitySet="UserEntities" />
+      <End Role="Products" EntitySet="Products" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Town_Region" Association="Self.FK_Town_Region">
+      <End Role="Regions" EntitySet="Regions" />
+      <End Role="Towns" EntitySet="Towns" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

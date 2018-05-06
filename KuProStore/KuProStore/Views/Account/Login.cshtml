@@ -1,0 +1,60 @@
+﻿@model KuProStore.Models.Login
+
+@{
+    Layout = "~/Views/_BasicLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="col-md-8">
+                <div class="alert alert-warning alert-dismissable">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <text style="padding-left:10px"><strong>Войдите, пожалуйста, чтобы размещать объявления</strong><text>
+                </div>
+            </div>
+        }
+
+        @if (ViewBag.ValidationMessage != null)
+        {
+            <div class="col-md-8">
+                <div class="alert alert-danger">
+                    <text style="padding-left:10px"><strong>@ViewBag.ValidationMessage</strong><text>
+                </div>
+            </div>
+        }
+         
+        @using (Html.BeginForm()) {
+
+        if (!ViewData.ModelState.IsValid)
+        {
+                <div class="col-md-8">
+                    <div class="alert alert-danger">
+                        <strong>@Html.ValidationSummary()</strong>
+                    </div>
+                </div>
+        }
+                <div class="form-group">
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(e => e.LoginString, new { @class = "form-control", @placeholder = "Телефон" })
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <div class="col-md-8" style="padding-top:10px">
+                        @Html.PasswordFor(e => e.Password, new { @class = "form-control", @placeholder = "Пароль" })
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <div class="col-md-8" style="padding-top:10px">
+                        <button class="btn btn-success" type="submit">Войти</button>
+                        @Html.ActionLink("Регистрация","Registration", "Account", new { @class= "btn btn-success" })                        
+                    </div>
+                </div>
+        }
+    </div>
+    <div class="col-sm-4"></div>
+</div>

@@ -1,0 +1,54 @@
+﻿@model KuProStore.Models.Product
+
+@{
+    Layout = "~/Views/_BasicLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8">
+        @if (Model != null)
+        {
+            <div class="well" style="font-size:150%; text-align:left">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <strong style="font-size:175%">@Model.Name</strong>   
+                    </div>
+                    <div class="col-sm-3">
+                        <strong style="font-size:175%;  text-align:right">Цена: @Model.Price</strong>
+                    </div>
+                </div>                             
+                
+                <br>
+                <text>Город @Model.Town.TownName, область: @ViewBag.RegionName</text>
+                <br>
+                <text>Размещено: @Model.AddingTime</text>
+                <br>
+                <br>
+                <strong>Описание:</strong>
+                <br>
+                <text>@Model.Description</text>
+                <br>
+                <br>
+                <strong>Контактная информация:</strong>
+                <br>
+                <strong style="font-size:160%">@Model.Contacts</strong>
+                <br>
+            </div>
+        }
+        <div  style="text-align:center">
+        @if (Model.Images.Value != null)
+        {
+            foreach (var i in Model.Images.Value)
+            {<img style="margin:auto" src="@i.ImageUrl" />}
+        }
+        </div>
+    </div>
+    <div class="col-sm-2">
+
+    </div>
+</div>
+<br>
+
+
+

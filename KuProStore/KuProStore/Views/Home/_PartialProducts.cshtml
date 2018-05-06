@@ -1,0 +1,36 @@
+﻿@using KuProStore.UI.HtmlHelpers;
+
+@model KuProStore.UI.ViewModel.ProductsViewModel
+
+@if (Model.Products != null)
+{
+    foreach (var i in Model.Products)
+    {
+        <div class="well">
+            <div class="row">
+                <div class="col-xs-3" style="text-align:center">
+                    @if (i.Images.Value.Count > 0)
+                    {
+                        <a href="@Url.Action("ViewProduct", "Home", new { productId = @i.ProductId })"><img class="img-thumbnail" style="margin:auto; max-width:120px; max-height:100px" src="@i.Images.Value.ElementAt(0).ImageUrl"></a>
+                    }
+                    else
+                    {
+                      <a href="@Url.Action("ViewProduct", "Home", new { productId = @i.ProductId })"><img class="img-thumbnail" style="margin:auto; max-width:120px; max-height:100px" src="~/Images/no_photo.png"></a>
+                    }
+                </div>
+                <div class="col-xs-6">
+                    <a href="@Url.Action("ViewProduct", "Home", new { productId = @i.ProductId })"><strong style="font-size:150%">@i.Name</strong></a>
+                    <br>
+                    <p>Последнее обновление: @i.UpdateTime</p> 
+                    <p>Размещено: @i.AddingTime</p> 
+                    <strong>@i.Town.TownName, область: @Model.Regions.Where(e => e.ID == i.Town.RegionId).FirstOrDefault().RegionName</strong>
+                </div>
+                <div class="col-xs-3" style="text-align:right">
+                   <strong style="font-size:175%;margin:auto">@i.Price грн</strong>
+                </div>
+            </div> 
+        </div>
+    }
+
+    @Html.PageLinks(Model.PagingInfo, x => Url.Action("Index", new { page = x }))
+}

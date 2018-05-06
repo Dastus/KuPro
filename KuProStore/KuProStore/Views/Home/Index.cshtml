@@ -1,0 +1,89 @@
+﻿@model KuProStore.UI.ViewModel.ProductsViewModel
+
+@{
+    Layout = "~/Views/_BasicLayout.cshtml";
+    AjaxOptions options = new AjaxOptions()
+    {
+        HttpMethod = "get",
+        UpdateTargetId = "result"
+    };
+}
+
+<div>
+    <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("AddProduct", "Home")'" style="margin-left:auto;margin-right:auto;display:block;width:200px;height:60px"><strong>Разместить объявление</strong></button>
+    <br />
+</div>
+
+<!--
+<p>Viebag content: @ViewBag.Test and @ViewBag.Test2 and @ViewBag.Test3</p>
+-->
+<div class="row">
+    <div class="col-sm-3"></div>
+<div id="result" class="col-sm-6">
+    @using (Ajax.BeginForm("Index", "Home", options))
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-16">
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            <input type="text" name="filter" class="form-control" value="@Model.Filter" placeholder="Товар..." />
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" id="submit_btn" type="submit">Поиск</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="padding-top:10px">
+                <div class="col-sm-2">
+                    @Html.TextBoxFor(x => Model.TownName, new { @class = "form-control", @Value = Model.TownName, @placeholder = "Город", data_autocomplete_source = Url.Action("AutoCompleteTownSearch", "Home", new { term = Model.TownName, term2 = Model.RegionId }) })
+                </div>
+                <div class="col-sm-2">
+                    @Html.DropDownListFor(m => m.Regions, new SelectList(Model.Regions, "ID", "RegionName"), new { @id = "#region", @class = "form-control" })
+                </div>
+                <div class="col-sm-2">
+                    @Html.DropDownListFor(m => m.SearchOptions, new SelectList(Model.SearchOptions, "Option"), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    }
+
+    <br />
+
+    @Html.Partial("_PartialProducts", Model)
+</div>
+    <div class="col-sm-3"></div>
+</div>
+
+@section Scripts {     
+<script type="text/javascript">
+$(function () {
+    $("[data-autocomplete-source]").each(function () {
+        var target = $(this);
+        target.autocomplete({ minLength: 3,
+        source: function (request, response) {
+        $.ajax({
+            url: '@Url.Action("AutoCompleteTownSearch", "Home")',
+            dataType: "json",
+            data: {
+                town : request.term,
+                region : document.getElementById('#region').value,
+            },
+            success: function(data) {
+                response(data);
+            }
+            });
+        }
+
+        });
+    });
+});
+</script>
+}
+
+<!--
+    
+section Scripts {
+    Scripts.Render("~/bundles/javascript")    -->

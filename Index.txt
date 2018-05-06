@@ -1,0 +1,122 @@
+@model KuProStore.UI.ViewModel.ProductsViewModel
+
+@{
+    Layout = "~/Views/_BasicLayout.cshtml";
+    AjaxOptions options = new AjaxOptions()
+    {
+        HttpMethod = "get",
+        UpdateTargetId = "result"
+    };
+}
+
+<div>
+    <button type="button" class="btn btn-success" onclick="location.href='@Url.Action("AddProduct", "Home")'" style="margin-left:auto;margin-right:auto;display:block;width:200px;height:60px"><strong>Разместить объявление</strong></button>
+    <br />
+</div>
+
+<p>Viebag content: @ViewBag.Test and @ViewBag.Test2 and @ViewBag.Test3</p>
+@using (Ajax.BeginForm("Index", "Home", options))
+{
+    <div class="row">
+        <div class="col-xs-16" style="padding-left:14%">
+            <div class="col-xs-6">
+                <div class="input-group">
+                    <input type="text" name="filter" class="form-control" placeholder="Товар..." value=@Model.Filter />
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" id="submit_btn" type="submit">Поиск</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="padding-top:10px">
+        <div class="col-sm-3" style="padding-left:15%;padding-right:20px">
+            @Html.DropDownListFor(m => m.Regions, new SelectList(Model.Regions, "ID", "RegionName"), new { @id = "ddlstate", @class = "form-control", @style = "width:170px", @onclick = "javascript:GetTown(this.value);" , @onchange = "javascript:GetTown(this.value);" })
+        </div>
+        <div class="col-sm-3">
+            @Html.TextBoxFor(x => Model.TownName, new { @class = "form-control", @Value = Model.TownName, @style = "width:200px", data_autocomplete_source = Url.Action("AutoCompleteTownSearch", "Home", new { term = Model.TownName, term2 = Model.RegionId }) })
+        </div>
+        <div class="col-sm-3" style="margin-left:10px;width:200px">
+            <select id="ddlcity" name="ddlcity" class="form-control" style="width:170px;margin-left:10px"></select>
+        </div>
+        <div class="col-sm-3" style="padding-left:10px;width:200px">
+            @Html.DropDownListFor(m => m.SearchOptions, new SelectList(Model.SearchOptions, "Option"), new { @class = "form-control", @style = "width:170px" })
+        </div>
+    </div>
+}
+
+    <br />
+    <div id="result" class="col-xs-8" style="padding-left:15%">
+        @Html.Partial("_PartialProducts", Model)
+    </div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jquery-ui")
+    <script type="text/javascript">
+        $(function () {
+            $("[data-autocomplete-source]").each(function () {
+                var target = $(this);
+                target.autocomplete({ minLength: 3,
+                source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("AutoCompleteTownSearch", "Home")',
+                    dataType: "json",
+                    data: {
+                        town : request.term,
+                        region : document.getElementById('ddlstate').value,
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                   });
+                }
+
+                });
+            });
+        });
+    </script>
+
+
+<script language="javascript" type="text/javascript">
+
+    function GetTown(_regionId) {
+        var procemessage = "<option value='0'> Подождите, пожалуйста...</option>";
+        $("#ddlcity").html(procemessage).show();
+        var url = "/Home/GetTownByRegionId/";
+
+        $.ajax({
+            url: url,
+            data: { regionId: _regionId },
+            cache: false,
+            type: "POST",
+            success: function (data) {
+                var markup = "<option value='0'>Выберите город</option>";
+                for (var x = 0; x < data.length; x++) {
+                    markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                }
+                $("#ddlcity").html(markup).show();
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+
+    }
+</script>
+}
+
+<!--
+  
+
+
+ myVar = document.getElementById('ddlstate').value;
+
+ function submit_click(myVar)
+ {
+     GetTown(myVar);
+ }
+ -->

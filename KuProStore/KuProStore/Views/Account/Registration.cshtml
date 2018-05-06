@@ -1,0 +1,68 @@
+﻿@model KuProStore.Models.User
+
+@{
+    Layout = "~/Views/_BasicLayout.cshtml";
+}
+
+
+<div class="row">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4">
+        @if (ViewBag.ValidationMessage != null)
+        {
+            <div class="col-md-8">
+                <div class="alert alert-danger">
+                    <text style="padding-left:10px"><strong>@ViewBag.ValidationMessage</strong><text>
+                </div>
+            </div>
+        }
+
+        @using (Html.BeginForm())
+        {
+            if (!ViewData.ModelState.IsValid)
+            {
+                <div class="col-md-8">
+                    <div class="alert alert-danger">
+                        <strong>@Html.ValidationSummary()</strong>
+                    </div>
+                </div>
+            }
+            <br />
+            <div class="form-group">
+                <div class="col-md-8">
+                    @Html.TextBoxFor(e => e.ContactPhone, new { @class = "form-control", @placeholder = "Телефон (обязательно)", @required = "true", @style = "margin-top:10px" })
+                </div>
+            </div>            
+            <div class="form-group">
+                <div class="col-md-8">
+                    @Html.TextBoxFor(e => e.FirstName, new { @class = "form-control", @placeholder = "Имя (обязательно)", @required = "true", @style="margin-top:10px"})
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <div class="col-md-8">
+                    @Html.TextBoxFor(e => e.LastName, new { @class = "form-control", @placeholder = "Фамилия (необязательно)", @style = "margin-top:10px" })
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <div class="col-md-8">
+                    @Html.TextBoxFor(e => e.Email, new { @class = "form-control", @placeholder = "Email (необязательно)", @style = "margin-top:10px"})
+                </div>
+            </div>
+            <br>
+            <div class="form-group" >
+                <div class="col-md-8" style="padding-top:10px">
+                    @Html.TextAreaFor(x => Model.ContactInfo, new { @class = "form-control", @rows = 5, @placeholder = "Здесь можно указать дополнительную информацию: доп. номера телефонов, скайп, в какое время звонить и т.д." })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-8" style="padding-top:10px">
+                    <button class="btn btn-success" type="submit">Зарегистировать</button>
+                </div>
+            </div>
+            }
+        </div>
+        <div class="col-sm-4"></div>
+        </div>
+

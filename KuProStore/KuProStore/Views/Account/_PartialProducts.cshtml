@@ -1,0 +1,72 @@
+﻿@using KuProStore.UI.HtmlHelpers;
+
+@model KuProStore.UI.ViewModel.ProductsViewModel
+
+<div class="modal fade" id="basic" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Подтверждение удаления</h4>
+            </div>
+            <div class="modal-body">
+                Вы действительно хотите удалить это объявление?
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" type="button" class="btn btn-default">Отмена</button>
+                <button id="btnContinueDelete" type="button" class="btn btn-primary">Удалить</button>                
+            </div>
+        </div>
+    </div>
+</div>
+
+    @if (Model.Products != null)
+    {
+
+        foreach (var i in Model.Products)
+        {
+            <div class="row">
+                <div class="col-sm-9">
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                @if (i.Images.Value.Count > 0)
+                                {
+                                    <a href="@Url.Action("ViewProduct", "Home", new { productId = @i.ProductId })"><img class="img-thumbnail" width = "120" src="@i.Images.Value.ElementAt(0).ImageUrl"></a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("ViewProduct", "Home", new { productId = @i.ProductId })"><img class="img-thumbnail" width="140" src="~/Images/no_photo.png"></a>
+                                }
+                            </div>
+                            <div class="col-xs-6">
+                                <a href="@Url.Action("ViewProduct", "Home", new { productId = @i.ProductId })"><strong style="font-size:150%">@i.Name</strong></a>
+                                @if (@i.IsActive == false)
+                                { <strong style="color:darkgray">(Неактивно)</strong>}
+                                <br>
+                                <p>Размещено: @i.AddingTime</p>
+                                <br>                                                                                          
+                                <strong>@i.Town.TownName, область: @Model.Regions.Where(e => e.ID == i.Town.RegionId).FirstOrDefault().RegionName</strong>
+                            </div>
+                            <div class="col-xs-3" style="text-align:right">
+                                <strong style="font-size:175%;margin:auto">@i.Price грн</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (i.IsActive == true)
+                {
+                <div class="col-sm-1" style="padding-top:10px">
+
+                    @Html.ActionLink("Изменить", "EditProduct", "Account", new { productId = @i.ProductId }, new { @class = "btn btn-primary" })
+                    <br>
+                    <a id="deleteItem" class="btn btn-danger deleteItem" style = "min-width:90px; margin-top:5px" data-target="#basic" data-toggle="modal" data-id="@i.ProductId">Удалить</a>
+
+                </div>
+                }
+            </div>
+        }
+
+        @Html.PageLinks(Model.PagingInfo, x => Url.Action("Index", new { page = x }))
+    }
+
